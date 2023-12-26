@@ -14,10 +14,18 @@ class PengaduanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Pengaduan::query();
 
-        $items = Pengaduan::orderBy('created_at', 'DESC')->get();
+        if ($request->has('search_query')) {
+            $searchQuery = $request->input('search_query');
+            $query->where('name', 'LIKE', "%$searchQuery%")
+                ->orWhere('status', 'LIKE', "%$searchQuery%");
+        }
+
+        $items = $query->orderBy('created_at', 'DESC')->get();
+
         return view('pages.admin.pengaduan.index', [
             'items' => $items
         ]);
